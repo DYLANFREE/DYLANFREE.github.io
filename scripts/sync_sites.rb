@@ -11,17 +11,25 @@ require "uri"
 SCRIPT_DIR = Pathname.new(__dir__).realpath
 REPO = SCRIPT_DIR.parent
 WORKSPACE = REPO.parent
+SITES_ROOT = REPO.join("sites")
 LEGACY_LUX = WORKSPACE.join("luxreport")
 LEGACY_AI = WORKSPACE.join("chinafactor-site")
 
 SITE_COPY_RULES = {
   "luxreport" => {
+    target: SITES_ROOT.join("luxreport"),
     source: LEGACY_LUX,
     include: %w[index.html images]
   },
-  "AI-Luxreport" => {
+  "ai-research" => {
+    target: SITES_ROOT.join("ai-research"),
     source: LEGACY_AI,
-    include: %w[index.html ai-supply-demand.html china-factor.html assets waiting-for-overreaction]
+    include: %w[index.html ai-supply-demand.html china-factor.html assets]
+  },
+  "waiting-for-overreaction" => {
+    target: SITES_ROOT.join("waiting-for-overreaction"),
+    source: LEGACY_AI.join("waiting-for-overreaction"),
+    include: %w[index.html history-browser.js assets]
   }
 }.freeze
 
@@ -46,7 +54,7 @@ def run_sync!(dir, script)
 end
 
 def safe_reset!(path)
-  raise "Unsafe target: #{path}" unless path.parent.realpath == REPO.realpath
+  raise "Unsafe target: #{path}" unless path.parent.realpath == SITES_ROOT.realpath
   raise "Unsafe target name: #{path.basename}" unless SITE_COPY_RULES.key?(path.basename.to_s)
 
   FileUtils.rm_rf(path)
@@ -55,7 +63,7 @@ end
 
 def copy_site!(name, config)
   source = config.fetch(:source)
-  target = REPO.join(name)
+  target = config.fetch(:target)
   safe_reset!(target)
 
   config.fetch(:include).each do |entry|

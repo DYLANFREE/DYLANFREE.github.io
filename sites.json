@@ -4,24 +4,25 @@
     {
       "id": "luxreport",
       "title": "硅基智能体报告",
-      "publish_path": "luxreport/",
-      "public_url": "https://dylanfree.github.io/luxreport/",
+      "publish_path": "sites/luxreport/",
+      "public_url": "https://dylanfree.github.io/sites/luxreport/",
+      "legacy_public_url": "https://dylanfree.github.io/luxreport/",
       "legacy_repository": "DYLANFREE/luxreport"
     },
     {
       "id": "ai-luxreport",
       "title": "AI非理性繁荣深度研究",
-      "publish_path": "AI-Luxreport/",
-      "public_url": "https://dylanfree.github.io/AI-Luxreport/",
+      "publish_path": "sites/ai-research/",
+      "public_url": "https://dylanfree.github.io/sites/ai-research/",
+      "legacy_public_url": "https://dylanfree.github.io/AI-Luxreport/",
       "legacy_repository": "DYLANFREE/AI-Luxreport"
     },
     {
       "id": "waiting-for-overreaction",
       "title": "等，不是猜",
-      "publish_path": "AI-Luxreport/waiting-for-overreaction/",
-      "public_url": "https://dylanfree.github.io/AI-Luxreport/waiting-for-overreaction/",
-      "parent_site": "ai-luxreport"
+      "publish_path": "sites/waiting-for-overreaction/",
+      "public_url": "https://dylanfree.github.io/sites/waiting-for-overreaction/",
+      "legacy_public_url": "https://dylanfree.github.io/AI-Luxreport/waiting-for-overreaction/"
     }
   ]
 }
-

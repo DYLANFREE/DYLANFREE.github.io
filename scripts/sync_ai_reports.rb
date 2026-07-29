@@ -7,7 +7,7 @@ require "pathname"
 require "uri"
 
 SCRIPT_DIR = Pathname.new(__dir__).realpath
-SITE = SCRIPT_DIR.parent.join("AI-Luxreport")
+SITE = SCRIPT_DIR.parent.join("sites/ai-research")
 WORKSPACE = Pathname.new(ENV.fetch("WEBSITE_WORKSPACE", SCRIPT_DIR.parent.parent.to_s)).realpath
 ASSETS = SITE.join("assets")
 

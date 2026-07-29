@@ -7,12 +7,12 @@ require "pathname"
 require "uri"
 
 SCRIPT_DIR = Pathname.new(__dir__).realpath
-SITE = SCRIPT_DIR.parent.join("AI-Luxreport")
+PUBLISH_ROOT = SCRIPT_DIR.parent.join("sites")
 WORKSPACE = Pathname.new(ENV.fetch("WEBSITE_WORKSPACE", SCRIPT_DIR.parent.parent.to_s)).realpath
 SOURCE = WORKSPACE.join("与AI同行/09_AI泡沫全景/01_成果_暂定完成/短分享_等待过度预期破裂")
 OUTPUT_NAME = "waiting-for-overreaction"
-OUTPUT = SITE.join(OUTPUT_NAME)
-STAGING = SITE.join(".#{OUTPUT_NAME}.staging")
+OUTPUT = PUBLISH_ROOT.join(OUTPUT_NAME)
+STAGING = PUBLISH_ROOT.join(".#{OUTPUT_NAME}.staging")
 
 FILES = %w[index.html history-browser.js].freeze
 
@@ -79,7 +79,7 @@ FILES.each do |name|
   raise "Missing source file: #{SOURCE.join(name)}" unless SOURCE.join(name).file?
 end
 raise "Missing source assets: #{SOURCE.join('assets')}" unless SOURCE.join("assets").directory?
-raise "Unsafe output path" unless OUTPUT.parent.realpath == SITE.realpath && OUTPUT.basename.to_s == OUTPUT_NAME
+raise "Unsafe output path" unless OUTPUT.parent.realpath == PUBLISH_ROOT.realpath && OUTPUT.basename.to_s == OUTPUT_NAME
 
 FileUtils.rm_rf(STAGING)
 FileUtils.mkdir_p(STAGING)
@@ -99,7 +99,7 @@ FileUtils.mv(STAGING, OUTPUT)
 
 puts JSON.pretty_generate(
   source: SOURCE.relative_path_from(WORKSPACE).to_s,
-  output: OUTPUT.relative_path_from(SITE).to_s,
+  output: OUTPUT.relative_path_from(PUBLISH_ROOT).to_s,
   files: FILES,
   assets: asset_count,
   validation: validation,

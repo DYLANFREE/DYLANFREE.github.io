@@ -1,12 +1,12 @@
 # DYLANFREE.github.io
 
-统一的公开网站发布仓库。
+统一的公开网站发布仓库。所有站点使用 `sites/` 下的新路径，避免与迁移期的旧 GitHub Pages 仓库发生路径冲突。
 
 ## 目录
 
-- `luxreport/`：硅基智能体报告
-- `AI-Luxreport/`：AI 非理性繁荣深度研究
-- `AI-Luxreport/waiting-for-overreaction/`：等，不是猜
+- `sites/luxreport/`：硅基智能体报告
+- `sites/ai-research/`：AI 非理性繁荣深度研究
+- `sites/waiting-for-overreaction/`：等，不是猜
 - `sites.json`：网站、发布路径和公网地址清单
 - `scripts/sync_sites.rb`：本地统一同步与发布前检查
 
@@ -36,4 +36,4 @@ git diff --stat
 git diff --check
 ```
 
-提交推送后，逐一验证 `sites.json` 中的公网地址。
+提交推送后，逐一验证 `sites.json` 中的 `public_url`。`legacy_public_url` 只用于迁移期存量链接核验；旧仓库不得在未确认前删除。

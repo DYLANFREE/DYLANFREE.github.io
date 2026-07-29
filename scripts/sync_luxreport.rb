@@ -7,7 +7,7 @@ require "pathname"
 require "uri"
 
 SCRIPT_DIR = Pathname.new(__dir__).realpath
-REPO = SCRIPT_DIR.parent.join("luxreport")
+REPO = SCRIPT_DIR.parent.join("sites/luxreport")
 WORKSPACE = Pathname.new(ENV.fetch("WEBSITE_WORKSPACE", SCRIPT_DIR.parent.parent.to_s)).realpath
 SOURCE = WORKSPACE.join("与AI同行/硅基智能体/产品/硅基智能体_完整版.html")
 SOURCE_DIR = SOURCE.dirname
