@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="立势研究公开网站目录">
+  <title>立势研究｜网站目录</title>
+  <style>
+    :root {
+      --ink: #1b211d;
+      --muted: #68706a;
+      --paper: #f4f3ee;
+      --surface: #ffffff;
+      --line: #d8ddd8;
+      --green: #315c45;
+      --rust: #9b4e32;
+      --blue: #385a78;
+      --shadow: 0 18px 44px rgba(28, 36, 30, .09);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif;
+    }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 44px 0 64px; }
+    header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow { margin: 0 0 8px; color: var(--rust); font-size: 12px; font-weight: 750; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(32px, 5vw, 58px); line-height: 1.08; letter-spacing: 0; }
+    .count { color: var(--muted); font-size: 14px; white-space: nowrap; }
+    main { padding-top: 28px; }
+    .site-list { display: grid; gap: 16px; }
+    .site {
+      display: grid;
+      grid-template-columns: minmax(240px, 34%) 1fr auto;
+      min-height: 210px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      text-decoration: none;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+    .site:hover, .site:focus-visible {
+      transform: translateY(-2px);
+      border-color: #aeb8b0;
+      box-shadow: 0 22px 54px rgba(28, 36, 30, .13);
+      outline: none;
+    }
+    .thumb { min-height: 210px; background: #e5e8e3; }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .copy { align-self: center; padding: 28px 32px; }
+    .label { display: block; margin-bottom: 8px; color: var(--green); font-size: 12px; font-weight: 750; }
+    .site:nth-child(2) .label { color: var(--blue); }
+    .site:nth-child(3) .label { color: var(--rust); }
+    h2 { margin: 0 0 10px; font-size: clamp(24px, 3vw, 36px); line-height: 1.2; letter-spacing: 0; }
+    .copy p { max-width: 660px; margin: 0; color: var(--muted); font-size: 15px; line-height: 1.75; }
+    .enter { align-self: center; padding: 28px; color: var(--green); font-size: 26px; }
+    footer { padding-top: 24px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 24px, 620px); padding-top: 28px; }
+      header { align-items: start; flex-direction: column; gap: 8px; }
+      .site { grid-template-columns: 1fr; }
+      .thumb { min-height: 170px; max-height: 220px; }
+      .copy { padding: 22px; }
+      .enter { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div>
+        <p class="eyebrow">Public Research Sites</p>
+        <h1>立势研究</h1>
+      </div>
+      <div class="count">3 个公开阅读入口</div>
+    </header>
+    <main>
+      <section class="site-list" aria-label="公开研究网站">
+        <a class="site" href="luxreport/">
+          <div class="thumb">
+            <img src="luxreport/images/AI投资的八层框架.jpg" alt="">
+          </div>
+          <div class="copy">
+            <span class="label">Silicon Agents</span>
+            <h2>硅基智能体报告</h2>
+            <p>从硅基人口、算力基础设施、Agent 经济与支付网络出发，理解智能体时代的产业结构。</p>
+          </div>
+          <span class="enter" aria-hidden="true">→</span>
+        </a>
+        <a class="site" href="AI-Luxreport/">
+          <div class="thumb">
+            <img src="AI-Luxreport/assets/ai-epoch_ai_training_cost_trend.png" alt="">
+          </div>
+          <div class="copy">
+            <span class="label">AI Research Map</span>
+            <h2>AI非理性繁荣深度研究</h2>
+            <p>并行阅读 AI 供需结构与中国产业变量，持续检验繁荣、约束和产业链重估。</p>
+          </div>
+          <span class="enter" aria-hidden="true">→</span>
+        </a>
+        <a class="site" href="AI-Luxreport/waiting-for-overreaction/">
+          <div class="thumb">
+            <img src="AI-Luxreport/waiting-for-overreaction/assets/横版_信息_v1.jpg" alt="">
+          </div>
+          <div class="copy">
+            <span class="label">Short Share</span>
+            <h2>等，不是猜</h2>
+            <p>不预测泡沫如何破裂，等待过度预期破裂，而技术革命没有破裂的时刻。</p>
+          </div>
+          <span class="enter" aria-hidden="true">→</span>
+        </a>
+      </section>
+    </main>
+    <footer>DYLANFREE.github.io</footer>
+  </div>
+</body>
+</html>
