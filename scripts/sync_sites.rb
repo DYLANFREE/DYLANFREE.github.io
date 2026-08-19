@@ -6,6 +6,7 @@ require "json"
 require "open3"
 require "pathname"
 require "rbconfig"
+require "tmpdir"
 require "uri"
 
 SCRIPT_DIR = Pathname.new(__dir__).realpath
@@ -24,7 +25,8 @@ SITE_COPY_RULES = {
   "ai-research" => {
     target: SITES_ROOT.join("ai-research"),
     source: LEGACY_AI,
-    include: %w[index.html ai-supply-demand.html china-factor.html assets]
+    include: %w[ai-supply-demand.html china-factor.html assets],
+    preserve: %w[index.html stage-thinking.html assets/stage-*]
   },
   "waiting-for-overreaction" => {
     target: SITES_ROOT.join("waiting-for-overreaction"),
@@ -64,13 +66,32 @@ end
 def copy_site!(name, config)
   source = config.fetch(:source)
   target = config.fetch(:target)
-  safe_reset!(target)
+  preserve = config.fetch(:preserve, [])
 
-  config.fetch(:include).each do |entry|
-    from = source.join(entry)
-    raise "Missing publish artifact: #{from}" unless from.exist?
+  Dir.mktmpdir("site-preserve-") do |temp_dir|
+    snapshot = Pathname.new(temp_dir)
+    preserve.each do |pattern|
+      matches = Dir.glob(target.join(pattern).to_s)
+      raise "Missing preserved artifact: #{target.join(pattern)}" if matches.empty?
 
-    FileUtils.cp_r(from, target.join(entry), preserve: true)
+      matches.each do |path|
+        relative = Pathname.new(path).relative_path_from(target)
+        destination = snapshot.join(relative)
+        FileUtils.mkdir_p(destination.dirname)
+        FileUtils.cp_r(path, destination, preserve: true)
+      end
+    end
+
+    safe_reset!(target)
+
+    config.fetch(:include).each do |entry|
+      from = source.join(entry)
+      raise "Missing publish artifact: #{from}" unless from.exist?
+
+      FileUtils.cp_r(from, target.join(entry), preserve: true)
+    end
+
+    FileUtils.cp_r(snapshot.children.map(&:to_s), target, preserve: true) unless snapshot.children.empty?
   end
 end
 

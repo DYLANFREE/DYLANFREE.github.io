@@ -31,6 +31,15 @@ REPORTS = [
     source: WORKSPACE.join("与AI同行/09_AI泡沫全景/04_已分享_冻结区/第2讲_20260707_AI供需与中国因素/中国因素_问题推导链.html"),
     output: "china-factor.html",
     fallback_dirs: []
+  },
+  {
+    key: "stage",
+    title: "AI非理性繁荣阶段思考",
+    kicker: "Stage Conclusion",
+    description: "从泡沫位置、利润错配、技术扩散和行动信号出发，汇总当前阶段的十九个判断。",
+    source: WORKSPACE.join("与AI同行/09_AI泡沫全景/02_结论版_支线/AI非理性繁荣阶段思考.html"),
+    output: "stage-thinking.html",
+    fallback_dirs: []
   }
 ]
 
@@ -65,6 +74,13 @@ def resolve_source(clean, source_dir, fallback_dirs)
   nil
 end
 
+def copy_asset(source, destination)
+  FileUtils.mkdir_p(destination.dirname)
+  FileUtils.chmod(0o644, destination) if destination.exist?
+  FileUtils.cp(source, destination)
+  FileUtils.chmod(0o644, destination)
+end
+
 def inject_back_link(html)
   back = <<~HTML
     <a class="site-home-link" href="index.html" aria-label="返回首页">← 返回首页</a>
@@ -79,6 +95,65 @@ def inject_back_link(html)
     html.sub(/<body[^>]*>/i) { |m| "#{m}\n#{back}" }
   else
     "#{back}\n#{html}"
+  end
+end
+
+def inject_hash_navigation(html)
+  script = <<~HTML
+    <script>
+      (function () {
+        function scrollToTarget(target) {
+          window.requestAnimationFrame(function () {
+            window.requestAnimationFrame(function () {
+              target.scrollIntoView({ block: "start" });
+            });
+          });
+        }
+
+        function openHashTarget() {
+          var id;
+          try { id = decodeURIComponent(window.location.hash.slice(1)); } catch (error) { return; }
+          if (!id) return;
+          var target = document.getElementById(id);
+          if (!target) return;
+          if (target.tagName === "DETAILS") target.open = true;
+
+          scrollToTarget(target);
+
+          var precedingImages = Array.prototype.filter.call(document.images, function (image) {
+            return image.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING;
+          });
+          var pendingImages = precedingImages.filter(function (image) { return !image.complete; });
+          if (!pendingImages.length) return;
+
+          var remaining = pendingImages.length;
+          var settled = false;
+          function finish() {
+            if (settled) return;
+            settled = true;
+            scrollToTarget(target);
+          }
+          pendingImages.forEach(function (image) {
+            function onSettled() {
+              remaining -= 1;
+              if (remaining === 0) finish();
+            }
+            image.addEventListener("load", onSettled, { once: true });
+            image.addEventListener("error", onSettled, { once: true });
+            image.loading = "eager";
+          });
+          window.setTimeout(finish, 3000);
+        }
+        window.addEventListener("DOMContentLoaded", openHashTarget);
+        window.addEventListener("hashchange", openHashTarget);
+      })();
+    </script>
+  HTML
+
+  if html.match?(%r{</body>}i)
+    html.sub(%r{</body>}i, "#{script}\n</body>")
+  else
+    "#{html}\n#{script}"
   end
 end
 
@@ -101,8 +176,7 @@ def rewrite_local_refs(html, report)
 
     dest_rel = File.join("assets", asset_name(report[:key], source_path.basename.to_s))
     dest_path = SITE.join(dest_rel)
-    FileUtils.mkdir_p(dest_path.dirname)
-    FileUtils.cp(source_path, dest_path)
+    copy_asset(source_path, dest_path)
     copied << dest_rel
     "#{prefix}#{dest_rel}#{tail}#{suffix}"
   end
@@ -121,8 +195,7 @@ def rewrite_local_refs(html, report)
 
     dest_rel = File.join("assets", asset_name(report[:key], source_path.basename.to_s))
     dest_path = SITE.join(dest_rel)
-    FileUtils.mkdir_p(dest_path.dirname)
-    FileUtils.cp(source_path, dest_path)
+    copy_asset(source_path, dest_path)
     copied << dest_rel
     wrapped = quote.empty? ? "#{dest_rel}#{tail}" : "#{quote}#{dest_rel}#{tail}#{quote}"
     "url(#{wrapped})"
@@ -178,16 +251,18 @@ def home_page
         .eyebrow{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:800}
         h1{margin:14px 0 10px;font-size:clamp(38px,6vw,76px);line-height:1.02;letter-spacing:0;font-weight:900}
         .lead{max-width:760px;margin:0 0 34px;color:var(--muted);font-size:18px;line-height:1.8}
-        .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
         .choice-card{min-height:340px;display:flex;flex-direction:column;justify-content:flex-end;padding:30px;border:1px solid rgba(23,26,22,.14);border-radius:8px;text-decoration:none;color:inherit;background:rgba(255,255,255,.52);box-shadow:0 24px 70px rgba(30,35,26,.10);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
         .choice-card:hover{transform:translateY(-3px);box-shadow:0 30px 90px rgba(30,35,26,.16);border-color:rgba(23,26,22,.28)}
         .choice-card.ai{background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(226,237,231,.74))}
         .choice-card.china{background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(237,229,216,.78))}
+        .choice-card.stage{background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(232,233,241,.78))}
         .kicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:850;color:var(--gold)}
         h2{margin:10px 0 12px;font-size:clamp(27px,3vw,42px);line-height:1.15;letter-spacing:0}
         p{margin:0;color:var(--muted);font-size:16px;line-height:1.75}
         .enter{margin-top:28px;font-weight:850;color:var(--green)}
         .china .enter{color:var(--blue)}
+        .stage .enter{color:#684f78}
         @media(max-width:760px){main{justify-content:flex-start;padding:36px 0}.grid{grid-template-columns:1fr}.choice-card{min-height:260px;padding:24px}.lead{font-size:16px}}
       </style>
     </head>
@@ -195,7 +270,7 @@ def home_page
       <main>
         <div class="eyebrow">Research Map</div>
         <h1>AI非理性繁荣深度研究</h1>
-        <p class="lead">两条推导链并行阅读：一条从供需结构判断繁荣的基本盘，一条从中国变量观察产业链和护城河的重估。</p>
+        <p class="lead">三条研究线并行阅读：供需结构、中国变量，以及汇总当前阶段判断的结论版。</p>
         <section class="grid" aria-label="研究入口">
           #{cards}
         </section>
@@ -209,8 +284,10 @@ FileUtils.mkdir_p(ASSETS)
 results = []
 REPORTS.each do |report|
   source_html = File.read(report[:source], encoding: "UTF-8")
+  source_html = source_html.gsub(/[ \t]+$/, "") if report[:key] == "stage"
   site_html, copied = rewrite_local_refs(source_html, report)
   site_html = inject_back_link(site_html)
+  site_html = inject_hash_navigation(site_html) if report[:key] == "stage"
   SITE.join(report[:output]).write(site_html, mode: "w", encoding: "UTF-8")
   validation = validate!(site_html, report[:output])
   results << {
