@@ -1483,20 +1483,22 @@ details[open]>.question::before{content:'\25BE'}
         <li>如果想抓住下一波机会，要在基建和应用层里找，不是继续追芯片。</li>
       </ol></div>
 
-    <figure class="ev-figure">
-      <img src="assets/stage-sec06_llm_inference_price_trends.png" alt="LLM 推理价格趋势：每年下降 9x-900x (Epoch AI)" style="width:100%;display:block">
-      <figcaption>图8 · LLM 推理价格趋势：每年下降 9x-900x (Epoch AI)</figcaption>
-    </figure>
+    <div class="fig-row">
+      <figure class="ev-figure">
+        <img src="assets/stage-sec06_llm_inference_price_trends.png" alt="LLM 推理价格趋势：每年下降 9x-900x (Epoch AI)" style="width:100%;display:block">
+        <figcaption>图8 · LLM 推理价格趋势：每年下降 9x-900x (Epoch AI)</figcaption>
+      </figure>
 
-    <figure class="ev-figure">
-      <img src="assets/stage-sec06_model_price_gpqa.png" alt="固定能力 (GPQA) 下的模型价格变化 (Epoch AI)" style="width:100%;display:block">
-      <figcaption>图9 · 固定能力 (GPQA) 下的模型价格变化 (Epoch AI)</figcaption>
-    </figure>
+      <figure class="ev-figure">
+        <img src="assets/stage-sec06_model_price_gpqa.png" alt="固定能力 (GPQA) 下的模型价格变化 (Epoch AI)" style="width:100%;display:block">
+        <figcaption>图9 · 固定能力 (GPQA) 下的模型价格变化 (Epoch AI)</figcaption>
+      </figure>
 
-    <figure class="ev-figure">
-      <img src="assets/stage-sec15_token_price_mmlu.png" alt="固定能力 (MMLU) 下Token价格走势 (Epoch AI)" style="width:100%;display:block">
-      <figcaption>图10 · 固定能力 (MMLU) 下Token价格走势 (Epoch AI)</figcaption>
-    </figure>
+      <figure class="ev-figure">
+        <img src="assets/stage-sec15_token_price_mmlu.png" alt="固定能力 (MMLU) 下Token价格走势 (Epoch AI)" style="width:100%;display:block">
+        <figcaption>图10 · 固定能力 (MMLU) 下Token价格走势 (Epoch AI)</figcaption>
+      </figure>
+    </div>
 
     <div class="ev ev-fact">
       <span class="ev-label" style="color:var(--green-mid)">数据：AI的钱在"反着"流——和Cloud成熟态完全相反</span>
@@ -3134,50 +3136,20 @@ document.addEventListener('keydown',function(e){
 </script>
 <script>
   (function () {
-    function scrollToTarget(target) {
+    function scrollHashTarget() {
+      var id;
+      try { id = decodeURIComponent(window.location.hash.slice(1)); } catch (error) { return; }
+      if (!id) return;
+      var target = document.getElementById(id);
+      if (!target) return;
       window.requestAnimationFrame(function () {
         window.requestAnimationFrame(function () {
           target.scrollIntoView({ block: "start" });
         });
       });
     }
-
-    function openHashTarget() {
-      var id;
-      try { id = decodeURIComponent(window.location.hash.slice(1)); } catch (error) { return; }
-      if (!id) return;
-      var target = document.getElementById(id);
-      if (!target) return;
-      if (target.tagName === "DETAILS") target.open = true;
-
-      scrollToTarget(target);
-
-      var precedingImages = Array.prototype.filter.call(document.images, function (image) {
-        return image.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING;
-      });
-      var pendingImages = precedingImages.filter(function (image) { return !image.complete; });
-      if (!pendingImages.length) return;
-
-      var remaining = pendingImages.length;
-      var settled = false;
-      function finish() {
-        if (settled) return;
-        settled = true;
-        scrollToTarget(target);
-      }
-      pendingImages.forEach(function (image) {
-        function onSettled() {
-          remaining -= 1;
-          if (remaining === 0) finish();
-        }
-        image.addEventListener("load", onSettled, { once: true });
-        image.addEventListener("error", onSettled, { once: true });
-        image.loading = "eager";
-      });
-      window.setTimeout(finish, 3000);
-    }
-    window.addEventListener("DOMContentLoaded", openHashTarget);
-    window.addEventListener("hashchange", openHashTarget);
+    window.addEventListener("DOMContentLoaded", scrollHashTarget);
+    window.addEventListener("hashchange", scrollHashTarget);
   })();
 </script>
 

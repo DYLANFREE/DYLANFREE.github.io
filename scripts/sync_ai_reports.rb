@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# Sync the two-report static site.
+# Sync the AI research reports. Pass report keys to rebuild only selected reports.
 
 require "fileutils"
 require "json"
@@ -98,54 +98,24 @@ def inject_back_link(html)
   end
 end
 
-def inject_hash_navigation(html)
+def inject_hash_scroll(html)
   script = <<~HTML
     <script>
       (function () {
-        function scrollToTarget(target) {
+        function scrollHashTarget() {
+          var id;
+          try { id = decodeURIComponent(window.location.hash.slice(1)); } catch (error) { return; }
+          if (!id) return;
+          var target = document.getElementById(id);
+          if (!target) return;
           window.requestAnimationFrame(function () {
             window.requestAnimationFrame(function () {
               target.scrollIntoView({ block: "start" });
             });
           });
         }
-
-        function openHashTarget() {
-          var id;
-          try { id = decodeURIComponent(window.location.hash.slice(1)); } catch (error) { return; }
-          if (!id) return;
-          var target = document.getElementById(id);
-          if (!target) return;
-          if (target.tagName === "DETAILS") target.open = true;
-
-          scrollToTarget(target);
-
-          var precedingImages = Array.prototype.filter.call(document.images, function (image) {
-            return image.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING;
-          });
-          var pendingImages = precedingImages.filter(function (image) { return !image.complete; });
-          if (!pendingImages.length) return;
-
-          var remaining = pendingImages.length;
-          var settled = false;
-          function finish() {
-            if (settled) return;
-            settled = true;
-            scrollToTarget(target);
-          }
-          pendingImages.forEach(function (image) {
-            function onSettled() {
-              remaining -= 1;
-              if (remaining === 0) finish();
-            }
-            image.addEventListener("load", onSettled, { once: true });
-            image.addEventListener("error", onSettled, { once: true });
-            image.loading = "eager";
-          });
-          window.setTimeout(finish, 3000);
-        }
-        window.addEventListener("DOMContentLoaded", openHashTarget);
-        window.addEventListener("hashchange", openHashTarget);
+        window.addEventListener("DOMContentLoaded", scrollHashTarget);
+        window.addEventListener("hashchange", scrollHashTarget);
       })();
     </script>
   HTML
@@ -282,12 +252,17 @@ end
 
 FileUtils.mkdir_p(ASSETS)
 results = []
-REPORTS.each do |report|
+requested_keys = ARGV
+unknown_keys = requested_keys - REPORTS.map { |report| report[:key] }
+raise "Unknown report keys: #{unknown_keys.join(', ')}" unless unknown_keys.empty?
+
+selected_reports = requested_keys.empty? ? REPORTS : REPORTS.select { |report| requested_keys.include?(report[:key]) }
+selected_reports.each do |report|
   source_html = File.read(report[:source], encoding: "UTF-8")
   source_html = source_html.gsub(/[ \t]+$/, "") if report[:key] == "stage"
   site_html, copied = rewrite_local_refs(source_html, report)
   site_html = inject_back_link(site_html)
-  site_html = inject_hash_navigation(site_html) if report[:key] == "stage"
+  site_html = inject_hash_scroll(site_html) if report[:key] == "stage"
   SITE.join(report[:output]).write(site_html, mode: "w", encoding: "UTF-8")
   validation = validate!(site_html, report[:output])
   results << {
